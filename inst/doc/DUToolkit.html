@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Introduction to DUToolkit</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Introduction to DUToolkit</h1>
+
+
+
+<p>During public health crises such as the COVID-19 pandemic,
+decision-makers rely on models to predict and estimate the impact of
+various policy alternatives on health outcomes. Often, there is a high
+degree of uncertainty in the evidence base underpinning these models.
+When there is increased uncertainty, the risk of selecting a policy
+option that does not align with the intended policy objective also
+increases; we term this decision risk. Even when models adequately
+capture uncertainty, the tools used to communicate their outcomes,
+underlying uncertainty, and the associated decision risk are important
+to mitigate decisions to adopt sub-optimal policies and/or critical
+health technologies.</p>
+<p>The DUToolkit package provides a suite of tools and visualizations
+for the characterization, estimation, and communication of parameter
+uncertainty and decision risk. The package is designed to evaluate the
+impact of policy alternatives on outcomes compared to a pre-defined
+baseline scenario. The baseline scenario is typically defined as
+maintaining the status quo or a scenario where no mitigation policies
+are implemented (i.e. a ‘do nothing’ or ‘existing policy’ scenario).
+DUToolkit leverages model outputs from uncertainty analysis techniques,
+such as probabilistic sensitivity analysis, general uncertainty
+analysis, or Bayesian inference, to support decision-making.</p>
+<div id="get-started" class="section level2">
+<h2>Getting started</h2>
+<p>The DUToolkit functions fall into five main categories:</p>
+<ul>
+<li><p><strong><em>Calculating risk:</em></strong> includes
+<code>calculate_risk()</code> and <code>tabulate_risk()</code></p></li>
+<li><p><strong><em>Time-outcome fan plot:</em></strong> includes
+<code>plot_fan()</code> and <code>calculate_time()</code></p></li>
+<li><p><strong><em>Probability density plots with risk
+shading:</em></strong> includes <code>get_max_min_values()</code>,
+<code>plot_density()</code>, <code>calculate_threshold_probs()</code>,
+and <code>calculate_max_min_risk()</code></p></li>
+<li><p><strong><em>Raincloud plots:</em></strong> includes
+<code>plot_raincloud()</code></p></li>
+<li><p><strong><em>Temporal probability density plots:</em></strong>
+includes <code>get_relative_values()</code>,
+<code>plot_temporal()</code>, and
+<code>sum_stats_temporal()</code></p></li>
+</ul>
+<div id="syn-data" class="section level3">
+<h3>Synthetic data</h3>
+<p>The DUToolkit package includes pre-loaded synthetic model outputs
+stored in the R object <code>psa_data</code>, which serve as an example
+dataset. This dataset represents a hypothetical scenario where a
+decision-maker is selecting between two policies related to COVID-19 in
+2020: (i) Baseline – do nothing/current state and (ii) Intervention 1 –
+close schools. Each policy is expected to impact the number of
+individuals in the hospital. Hospital capacity has a maximum upper
+bound, which is the decision threshold.</p>
+</div>
+<div id="format-data" class="section level3">
+<h3>Data format</h3>
+<p>The DUToolkit functions require model outputs from multiple
+simulation runs using different parameter sets (e.g., probabilistic
+sensitivity analysis, general uncertainty analysis, or Bayesian
+inference). These outputs must follow a standardized format, as
+follows:</p>
+<ol style="list-style-type: decimal">
+<li>A list of <code>data.frames</code> <em>(Required)</em>
+<ul>
+<li><p>The list must contain one <code>data.frame</code> for each policy
+alternative.</p></li>
+<li><p>Each <code>data.frame</code> must have:</p>
+<ul>
+<li><p>A <strong>first column</strong> representing model time, either
+as numeric values, (e.g., 1, 2, 3, …) or as dates in R <strong>Date
+format</strong> (e.g., 2021-01-01, 2021-01-02, …) with class =
+“Date”.</p></li>
+<li><p><strong>Subsequent columns</strong> containing predicted outputs
+for each simulation run at the corresponding time points (e.g., if there
+are 100 simulations, there will be 101 columns in the
+<code>data.frame</code>).</p></li>
+</ul></li>
+<li><p>To ensure a consistent basis for comparison, the model time in
+the first column should be <strong>identical across all policy
+alternatives</strong> (i.e., the first column in every
+<code>data.frame</code> should contain the same values).</p></li>
+</ul></li>
+</ol>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(DUToolkit)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="co"># example data.frame with date in first column</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="fu">head</span>(psa_data<span class="sc">$</span>Baseline[, <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>])</span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="co">#&gt;          date        1        2        3        4</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="co">#&gt; 2  2021-01-01 37.23075 36.13261 36.62189 36.85947</span></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="co">#&gt; 4  2021-01-02 30.84229 27.20223 28.65276 29.45438</span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="co">#&gt; 6  2021-01-03 27.77702 21.21132 23.64767 25.18233</span></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="co">#&gt; 8  2021-01-04 29.58525 17.42107 20.96771 23.48235</span></span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a><span class="co">#&gt; 10 2021-01-05 40.12541 15.36282 20.08010 25.14026</span></span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a><span class="co">#&gt; 12 2021-01-06 60.30618 14.74307 21.08585 32.24770</span></span></code></pre></div>
+<ol start="2" style="list-style-type: decimal">
+<li><p>A list of vectors containing weights <em>(Optional)</em></p>
+<ul>
+<li><p>Some simulation runs may be more or less likely than others.
+Various methods can account for this, such as calculating a
+log-likelihood for each simulation run and converting it into a weight.
+Users must choose the most appropriate method for their specific
+scenario.<br />
+</p></li>
+<li><p>Each <strong>vector</strong> in the list corresponds to a
+specific policy alternative and contains the <strong>weights</strong>
+assigned to each simulation run.</p></li>
+<li><p>Each weight vector must have:</p>
+<ul>
+<li><p>The <strong>same number of elements</strong> as the number of
+simulation run columns in the corresponding output
+<code>data.frame</code> (i.e., all columns <strong>except</strong> the
+first column).</p></li>
+<li><p>The <strong>order of weights</strong> must match the order of
+simulation run columns in the corresponding
+<code>data.frame</code>.</p></li>
+</ul></li>
+</ul></li>
+</ol>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

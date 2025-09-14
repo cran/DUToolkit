@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Temporal probability density plots</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Temporal probability density plots</h1>
+
+
+
+<p>Decision-makers may also want to consider how risk changes over the
+modelled time range. To do this, we plot the probability densities over
+time. The probability density of the highest (or lowest if the threshold
+is a minimum) projected outcome across simulation runs is plotted in the
+center of the graph for a given policy alternative. Above and below, the
+probability density of the outcome at specified time points relative to
+the time of the highest (or lowest) project outcome is plotted to
+visually illustrate how uncertainty, and therefore risk, changes over
+time. The decision threshold is shown directly on the plot as a vertical
+line to provide a clear reference point for interpreting the
+outputs.</p>
+<p>First, we find the model output value at the specified time points
+relative to the peak value for each simulation run using the
+<code>get_relative_values()</code> function. In our example, we will
+find the hospital demand every ten days for up to 20 days before and
+after the peak hospital demand.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># define inputs</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>tmin <span class="ot">&lt;-</span> <span class="fu">min</span>(psa_data<span class="sc">$</span>Intervention_1[, <span class="dv">1</span>]) <span class="co"># minimum simulation time</span></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>tmax <span class="ot">&lt;-</span> <span class="fu">max</span>(psa_data<span class="sc">$</span>Intervention_1[, <span class="dv">1</span>]) <span class="co"># maximum simulation time</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>Dt_max <span class="ot">&lt;-</span> <span class="cn">TRUE</span> <span class="co"># indicates the threshold values are maximums</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>D <span class="ot">&lt;-</span> <span class="dv">750</span> <span class="co"># single threshold value for the peak</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>t_s <span class="ot">&lt;-</span> <span class="dv">20</span> <span class="co"># total number of time steps from the peak</span></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>t_ss <span class="ot">&lt;-</span> <span class="dv">10</span> <span class="co"># time step increments to move in</span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="do">## find peak values</span></span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>peak_values_list <span class="ot">&lt;-</span> <span class="fu">get_max_min_values</span>(psa_data, tmin, tmax, Dt_max)</span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a><span class="co"># find values for temporal density plots</span></span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a>peak_temporal_list <span class="ot">&lt;-</span> <span class="fu">get_relative_values</span>(psa_data, peak_values_list, t_s, t_ss)</span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a><span class="fu">head</span>(peak_temporal_list<span class="sc">$</span>Baseline[[<span class="dv">1</span>]])</span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a><span class="co">#&gt;   time  outcome N</span></span>
+<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a><span class="co">#&gt; 1 peak 4207.443 1</span></span>
+<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a><span class="co">#&gt; 2 peak 1681.521 2</span></span>
+<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a><span class="co">#&gt; 3 peak 2539.177 3</span></span>
+<span id="cb1-20"><a href="#cb1-20" tabindex="-1"></a><span class="co">#&gt; 4 peak 2969.721 4</span></span>
+<span id="cb1-21"><a href="#cb1-21" tabindex="-1"></a><span class="co">#&gt; 5 peak 3073.741 5</span></span>
+<span id="cb1-22"><a href="#cb1-22" tabindex="-1"></a><span class="co">#&gt; 6 peak 1520.144 6</span></span></code></pre></div>
+<p>We then use the <code>plot_temporal()</code> function to generate the
+temporal probability density plots.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># generate peak temporal density plots</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>peak_temporal_plots <span class="ot">&lt;-</span> <span class="fu">plot_temporal</span>(peak_temporal_list, D)</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="do">## example plot</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>peak_temporal_plots<span class="sc">$</span>Baseline</span></code></pre></div>
+<p><img role="img" src="data:image/png;base64,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" width="100%" />
+The <code>sum_stats_temporal()</code> function can be used to calculate
+summary statistics (n, mean, median, and IQR) for the model output
+values at the time step relative to the peak value.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># generate summary statistics for peak temporal data</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>stats_peak_temporal <span class="ot">&lt;-</span> <span class="fu">sum_stats_temporal</span>(peak_temporal_list)</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>stats_peak_temporal<span class="sc">$</span>Baseline</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co">#&gt;   time_step   n      q1  median    mean      q3</span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="co">#&gt; 1   peak-20 813   90.32  136.99  157.21  210.21</span></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co">#&gt; 2   peak-10 813  738.29 1013.14 1005.52 1260.49</span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="co">#&gt; 3      peak 813 1520.14 2300.14 2247.85 2982.81</span></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a><span class="co">#&gt; 4   peak+10 813  884.80 1246.00 1211.20 1548.80</span></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a><span class="co">#&gt; 5   peak+20 813  247.77  326.34  338.76  418.55</span></span></code></pre></div>
+<div id="temp-outputs" class="section level3">
+<h3>Sharing outputs</h3>
+<p>The probability density plotted in the center of the peak temporal
+plot (labelled ‘peak’) is the same probability density that is plotted
+with <code>plot_density()</code> function and
+<code>plot_raincloud()</code> function. The temporal probability density
+plots can further supplement these probability density plots by showing
+how uncertainty changes over time for each scenario.</p>
+<p>We also recommend the following standard description for presenting
+the temporal probability density plots to decision-makers. We provide
+the standard description in paragraph and bullet point form for ease of
+use.</p>
+<div id="temp_sd" class="section level4">
+<h4>Standard description</h4>
+<div class="rmdnote">
+<p>These graph visually illustrates how uncertainty changes over time by
+showing the distributions of the forecasted <u><em>outcome</em></u><a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a> over time.
+The distribution in the center of the plot represents the
+<u><em>peak</em></u><a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a> <u><em>outcome</em></u><a href="#fn3" class="footnote-ref" id="fnref3"><sup>3</sup></a>. The distributions
+above and below show the outcome at different time points relative to
+the <u><em>peak</em></u><a href="#fn4" class="footnote-ref" id="fnref4"><sup>4</sup></a>, both forward (above) and backward (below)
+in time.</p>
+<p>The red dashed line indicates the policy target. A greater area to
+the <u><em>right</em></u><a href="#fn5" class="footnote-ref" id="fnref5"><sup>5</sup></a> of this line means a higher risk of
+<u><em>outcome</em></u><a href="#fn6" class="footnote-ref" id="fnref6"><sup>6</sup></a> <u><em>exceeding</em></u><a href="#fn7" class="footnote-ref" id="fnref7"><sup>7</sup></a> the policy target at
+the specified time. Scenarios where the area to the
+<u><em>right</em></u><a href="#fn8" class="footnote-ref" id="fnref8"><sup>8</sup></a> of the policy target is more quickly
+reduced as you move away from the <u><em>peak</em></u><a href="#fn9" class="footnote-ref" id="fnref9"><sup>9</sup></a> result in a shorter
+periods of time at higher risk of not achieving the policy target.</p>
+</div>
+</div>
+<div id="standard-description-bullet-points" class="section level4 unnumbered">
+<h4 class="unnumbered">Standard description bullet points</h4>
+<div class="rmdnote">
+<p>These graphs visually illustrates how uncertainty changes over
+time:</p>
+<ul>
+<li><p>The distribution in the center of the plot represents the
+<u><em>peak</em></u><a href="#fn10" class="footnote-ref" id="fnref10"><sup>10</sup></a> <u><em>outcome</em></u><a href="#fn11" class="footnote-ref" id="fnref11"><sup>11</sup></a>.</p></li>
+<li><p>The distributions above and below show the outcome at different
+time points relative to the <u><em>peak</em></u><a href="#fn12" class="footnote-ref" id="fnref12"><sup>12</sup></a>, both forward
+(above) and backward (below) in time.</p></li>
+<li><p>The red dashed line indicates the policy target.</p></li>
+<li><p>A greater area to the <u><em>right</em></u><a href="#fn13" class="footnote-ref" id="fnref13"><sup>13</sup></a> of this line means a
+higher chance of the <u><em>outcome</em></u><a href="#fn14" class="footnote-ref" id="fnref14"><sup>14</sup></a>
+<u><em>exceeding</em></u><a href="#fn15" class="footnote-ref" id="fnref15"><sup>15</sup></a> the policy target at the specified
+time.</p></li>
+<li><p>Scenarios where the area to the <u><em>right</em></u><a href="#fn16" class="footnote-ref" id="fnref16"><sup>16</sup></a> of the
+policy target is more quickly reduced as you move away from the
+<u><em>peak</em></u><a href="#fn17" class="footnote-ref" id="fnref17"><sup>17</sup></a> result in a shorter time frame of higher
+uncertainty.</p></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="footnotes footnotes-end-of-document">
+<hr />
+<ol>
+<li id="fn1"><p>insert outcome description (ex. hospital demand)<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+<li id="fn2"><p>if threshold is a minimum replace with <em>low
+point</em><a href="#fnref2" class="footnote-back">↩︎</a></p></li>
+<li id="fn3"><p>insert outcome description (ex. hospital demand)<a href="#fnref3" class="footnote-back">↩︎</a></p></li>
+<li id="fn4"><p>if threshold is a minimum replace with <em>low
+point</em><a href="#fnref4" class="footnote-back">↩︎</a></p></li>
+<li id="fn5"><p>if threshold is a minimum replace with <em>left</em><a href="#fnref5" class="footnote-back">↩︎</a></p></li>
+<li id="fn6"><p>insert outcome description (ex. hospital demand)<a href="#fnref6" class="footnote-back">↩︎</a></p></li>
+<li id="fn7"><p>if threshold is a minimum replace with <em>falling
+below</em><a href="#fnref7" class="footnote-back">↩︎</a></p></li>
+<li id="fn8"><p>if threshold is a minimum replace with <em>left</em><a href="#fnref8" class="footnote-back">↩︎</a></p></li>
+<li id="fn9"><p>if threshold is a minimum replace with <em>low
+point</em><a href="#fnref9" class="footnote-back">↩︎</a></p></li>
+<li id="fn10"><p>if threshold is a minimum replace with <em>low
+point</em><a href="#fnref10" class="footnote-back">↩︎</a></p></li>
+<li id="fn11"><p>insert outcome description (ex. hospital demand)<a href="#fnref11" class="footnote-back">↩︎</a></p></li>
+<li id="fn12"><p>if threshold is a minimum replace with <em>low
+point</em><a href="#fnref12" class="footnote-back">↩︎</a></p></li>
+<li id="fn13"><p>if threshold is a minimum replace with <em>left</em><a href="#fnref13" class="footnote-back">↩︎</a></p></li>
+<li id="fn14"><p>insert outcome description (ex. hospital demand)<a href="#fnref14" class="footnote-back">↩︎</a></p></li>
+<li id="fn15"><p>if threshold is a minimum replace with <em>falling
+below</em><a href="#fnref15" class="footnote-back">↩︎</a></p></li>
+<li id="fn16"><p>if threshold is a minimum replace with <em>left</em><a href="#fnref16" class="footnote-back">↩︎</a></p></li>
+<li id="fn17"><p>if threshold is a minimum replace with <em>low
+point</em><a href="#fnref17" class="footnote-back">↩︎</a></p></li>
+</ol>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

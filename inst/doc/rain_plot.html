@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Raincloud plots</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Raincloud plots</h1>
+
+
+
+<p>The probability densities of the highest (or lowest if the threshold
+is a minimum) projected outcome across simulation runs are plotted for
+each policy alternative alongside corresponding box plots, which
+indicate the mean and 50th percentile range. These plots are presented
+collectively on a single graph to facilitate visual comparison of the
+policy alternatives. The decision threshold is shown directly on the
+plot as a vertical line to provide a clear reference point for
+interpreting the outputs.</p>
+<p>We use the <code>plot_raincloud()</code> function to generate the
+raincloud plots.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># define inputs</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>tmin <span class="ot">&lt;-</span> <span class="fu">min</span>(psa_data<span class="sc">$</span>Intervention_1[, <span class="dv">1</span>]) <span class="co"># minimum simulation time</span></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>tmax <span class="ot">&lt;-</span> <span class="fu">max</span>(psa_data<span class="sc">$</span>Intervention_1[, <span class="dv">1</span>]) <span class="co"># maximum simulation time</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>Dt_max <span class="ot">&lt;-</span> <span class="cn">TRUE</span> <span class="co"># indicates the threshold values are maximums</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>D <span class="ot">&lt;-</span> <span class="dv">750</span> <span class="co"># single threshold value for the peak</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="do">## find peak values</span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>peak_values_list <span class="ot">&lt;-</span> <span class="fu">get_max_min_values</span>(psa_data, tmin, tmax, Dt_max)</span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a><span class="co"># generate raincloud plot</span></span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a>raincloud_plot <span class="ot">&lt;-</span> <span class="fu">plot_raincloud</span>(peak_values_list, D)</span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a>raincloud_plot</span></code></pre></div>
+<p><img role="img" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAqAAAAHgCAMAAABNUi8GAAABQVBMVEUAAAAAADoAAGYAOjoAOmYAOpAAZpAAZrYzMzM6AAA6ADo6AGY6OgA6Ojo6OmY6OpA6ZmY6ZpA6ZrY6kJA6kNtNTU1NTW5NTY5Nbo5NbqtNjshmAABmADpmAGZmOgBmOjpmOpBmZmZmkLZmkNtmtrZmtttmtv9sVoxuTU1uTW5uTY5ubo5ubqtuq+SOTU2OTW6OTY6Obk2OyP+QOgCQOjqQZgCQZjqQZpCQkGaQtpCQttuQ27aQ2/+Thqarbk2rbm6rjk2ryKur5OSr5P+2ZgC2Zjq2kDq2kGa2tma227a229u22/+2///Ijk3I5KvI///bkDrbkGbbtmbb25Db29vb2//b/7bb/9vb///i3ejkq27k/+Tk///p5+3/AAD/tmb/tpD/yI7/25D/27b/29v/5Kv//7b//8j//9v//+T///+kfXH3AAAACXBIWXMAAA7DAAAOwwHHb6hkAAAU9UlEQVR4nO2dC38U13mHVxgihNsSUy0uviRO06rYAYyhtZMW23G0JG0RRSVpolLKFhEhMd//A/Tc5rY7u1rt7uz8z5zn+Rlm5sy5zj46M3P0Lh5kAMIMuu4AwDwQFKRBUJAGQUEaBAVpEBSkaVHQdqp+9aqVakEUBAVpohMU0gJBQRoEBWkQFKRBUJAGQUEaBAVpEBSkiU5QFurTAkFBGgQFaRAUpEFQkAZBQRoEBWkQFKSJTlBICwQFaRAUpEFQkAZBQRoEBWkQFKRBUJAmOkFZqE8LBAVpEBSkQVCQBkFBGgQFaRAUpEFQkCY6QSEtEBSkQVCQBkFBGgQFaRAUpEFQkAZBQZroBGWhPi0QFKRBUJAGQUEaBAVpEBSkQVCQJgpBB5awj6BpoS+ocfNby4CF/xSRFzTo6RRdS4UQFeqCVvzE0BQRF7SqJ4amiLSggwk/eQ5ND2VBp/xkCk0PYUEb/MTQ5NAVtNFPBE0NWUEb9TSwUJ8WqoLO8hNBE0NT0ObbexCUu3xKSAo6x08ETQxFQefoaQXlRSklBAWd6yeCJoaeoPP9tIJiaELICXqOnwiaGGqCnuenB0OTQUzQxfxE0HTQEnRBPzE0HRAUpJESdGE/MTQZlAS9gJ8YmgrxCoqhSSAk6IX8ZApNhOgEtQv1GJoOOoIuOIEiaFrICLroDb4UFENTAEFBmpgFxdAEUBF04Vf4qqAY2n8QFKQREXTxNdCaoCzX957oBJ0AQXtO7IJiaM/REHR5PzG05/RAUAztM/ELiqG9RkLQlfzE0F7TB0FRtMf0Q1AM7S0Kgl7Iz/pCPYb2nb4IiqI9pT+CYmgv6ZGgKNpHBAS92CvSPEExtH90L+gFX+HnCoqhvaNngmJo3+iboBjaM6IT9FwwtFd0Lui6/fyWALxe0UdBMbRH9FJQDO0PXQvaip8Y2h/6KiiG9oSeCoqhfaGvgnKX7wkdC3pxP89bqMfQftFjQTG0D/RZUAztAd0KusQT6EUE5VUpfvotqDEUReOm54IyicZO7wXF0LjpVNBlFkEvLCiKRk2Xgra3SD9lKIrGShKCMonGSyKCYmisdCjoJv38llX7SElHUAyNkoQExdAY6U7QjfvJg2iMJCUohsZHdIIusVCPoRHTmaDLTqCrCcqDaGwkJyiGxkVXgi79BLqyoNzmoyJBQVE0JjoSdPlX+HUIiqHx0I2gg44FdQFOSBoDnQi6yhLomgQNjiKpOp0Iui7F1gCWipO6oA4c1QVBPSgqCoIGMFQTBC1AUUUQtARDBUHQChiqB4LWQFE1ohN0fQv1jWCoGAg6AYZqgaBTYKgSCDoNv1gSAkGbQFEZELQZYkhEQNDZDHLau0ZwHgh6PljaIdEJ2hlI2gkIehGYSjcOgl4YLN0kCLocWLohEHQFkLR9EHRFmErbBUHXAOul7dHt/8irXwyWpOt+SxOdoK9etVItiIKgII2soFdn8OrVrDOBNfUeNNAV9H+bsII2nihzrKn3oAGCgjQICtIgKEiTW3TyxbOpvRmYDHPylKcQFFZnOUFnn3w9/LBdQefriaB9oyLoyZ1fD4cPTu8Zxdxf2ckvvhreepm9+34/HBcZ/sM4Wk0rqnt684eWZ1AETYuqoLfvZq9vvbQT5NO72YuPspPbD4ycxsGX+XGeIeSxBz6trDDMr1evXp0t6DkrmZ5lBW2BNj8AmE9VUKOW35x+uZ+d3ncJL4yadyvHPoPNc99Mol/uh7SywrafQZlB06JZ0HvD4fCml+/O/7g7fHGcC2oPzPyKoNAqzYLefxbSjIM/3HlZOWYGhY3SKGj+fGldezG8m1WOy+mzllZWiKCwTqYFffede4u/ue9dO/l8P8vKY5+h8haPoNAm/CYJpFmPoCe3h0P3HrW+qmct+ZwXbrdSoyCH7Aw6CwKW0wJBQRoEBWkQFKRBUJAGQUGa6ASFtEBQkAZBQRoEBWkQFKRBUJAGQUEaBAVpohOUhfq0QFCQBkFBGgQFaRAUpEFQkAZBQRoEBWmiExTSAkFBGgQFaRAUpEFQkAZBQRoEBWkQFKSJTlAW6tMCQUEaBAVpEBSkQVCQBkFBGgQFaRAUpIlOUEgLBAVpEBSkQVCQBkFBGgQFaRAUpEFQkCY6QVmoTwsEBWkQFKRBUJAGQUEaBAVpEBSkQVCQJjpBIS0QFKRBUJAGQUEaBAVpEBSkQVCQBkFBmugEZaE+LRAUpEFQkAZBQRoEBWkQFKRBUJAGQUGa6ASFtEBQkAZBQRoEBWkQFKRBUJAGQUEaBAVpohOUhfq0QFCQBkFBGgQFaRAUpEFQkAZBQRoEBWmiExTSAkFBGgQFaRAUpEFQkAZBQRoEBWkQFKSJTlAW6tMCQUEaBAVpEBSkQVCQBkFBGgQFaRAUpIlO0J4zmE/X3ds8CCpBYeA/zCc9ZxH0Qqx7dlvQyws626cZGEEXoPyAFzNl8RpXEHMp4lMVQeewrEbnz2RtyLdEH7u+wAuAoA3oaNQyEUymCFoiNL9tFGlJExdU7L7bHbJTaXSCTi/UL/6yqvgsqISio9EKOlcy2VcTeeQm0ggFRbaWkZI0MkEHg1evuv78kkDG0YgE9fMmgm4KDUcjEbS8qSPoBhG42UcgaP2JE0E3TMeKigs6/TqEoBun03lUV1De1ZXozFFVQXFTjm4mUlVBu/40oJHNS4qgcEE2KymCwhJsLrYEQWFZNhJNiqCwGvMDyFYGQWEtnBPpuDTRCcpCvTbnR+Vu0KIWq555ARA0GhYMI2/RoharnjlqBI2WqQDy1i1qseqZo0TQ/rDQvyCwikVdVM0/HpYWCArSIChIg6DTXI2Y1i/OpolO0A1w9b9b52pLbSCoRtXtgqBCIOg0CCrEIhad3B4aHsw4+cUz89+yVUuCoEIsJKgV8OTz/dknl65aEgQVYmFB332/76ZSM5G+Hg4/NCmn9+zGz6And37tTvm0xauWBEGFWHwGvfPy9Mt9u396/1n24qMse3rXboKgt+9mr2+9DGmZW6pZSdBO12rakacmUluCRsaaBHXPoEY/g7HTemr3zMYcBUG/cHNpSFu8akliFrTra7d2Fr/Ff2fu4E/dzd0Ie3Pf3s2HZlsX1KctXvXF2cRCfTvy1ERC0AVZWNDs6YPTew/ydyJzOw8zZV3Q+5U3JgSdIxKCLsjCgpq7t7Pw8337rBmeN82mJmhIW7zqi4Ogc+tt/eJsmgutg74YDv/mqwfhRm/v8Tf36zNoSFu86ouDoHPrbf3ibJrofpOEoHPrbf3ibBoEnQZBhUDQabpeHFyB1q/NxkFQkCY6QSEtEBSkQVCQBkFBGgQFaRAUpEFQkAZBQZroBGWhPi0QFKRBUJAGQUEaBAVpEBSkQVCQBkFBmugEhbRAUJAGQUEaBAVpEBSkQVCQBkFBGgQFaaITlIX6tEBQkAZBQRoEBWkQFKRBUJAGQUEaBAVpohMU0gJBQRoEBWkQFKRBUJAGQUEaBAVpEBSkiU5QFurTAkFBGgQFaRAUpEFQkAZBQRoEBWkQFKSJTlBICwQFaRAUpEFQkAZBQRoEBWkQFKRBUJAmOkFZqE8LBAVpEBSkQVCQBkFBGgQFaRAUpEFQkCY6QSEtEBSkQVCQBkFBGgQFaRAUpEFQkAZBQZroBGWhPi0QFKRBUJAGQUEaBAVpEBSkQVCQBkFBmjYF7YarHbUr0n5fhr8BQTviatrt9234CNqz9vs2/P4JCr0CQUEaBAVpEBSkQVCQpieCnnzxLMtO7w1vvZzcbKT128Phg+7afz0cftjl8LPs3XetDb8fgr62n5C9Si8+mthsgtMv97OTz/e7at/+cE61u8HhG16Yn8+W2u+FoE9v/mA+pNP7z+yHVd9sovnX9oN4+qCz9rNsut2NNn/yi68etHX5eyGon0VO7ry0k1l9s6kOTDW82fbNZNVd8+++/42ZL1tqv0eCvr7lrkl9s6H23313t8P2T27f3O+w+Rd37Q29pfZ7JGiHM9jpvbtZpzN4lxO4aeodM+g5nHT5DGpmMPMS22H7WaePwC+Glrs8g87DXgt7m3Xvj9XNRhp3fnbWfribdjb8zC8ztdR+jwTtbCHQTyEPumzfPIOyDgqweRAUpEFQkAZBQRoEBWkQFKRBUJAGQdfA2H6Re6+a8ubJEtWcU+j42qMlKo0dBF2d0aWDLHv78ZWjImUpl84rhKCwFIfezLOHu0USgq4NBF2Vs4fh5j6+dOAcOr72q53BYNecGAy2XQa3DcnHO+5pwCbaiddik/wJp/jxtV8OBlb6PI8/7wQduxpTAkFXpZjYzE4Q1G3PHm6b+/6e29o/xztGukNr3uGlA5uQT702k03LKzre8efzPJXzxzt7M/vRUxB0VQpBjUhVQfP0sZ0E7exq5fJ/XXs09o+tTrc/H2Wl3dl0nvL8r3Z2m3rQaxB0VUpBP6nNoONwBx/bebIyu7q/Dv0/4RZ8s6sAW6WgdmvELPOE8zsTSwVJgKCr0vAMuoCglVf+tx9vParNoLmgIU9xfmdvVCmWCAi6MofeRPsW33iLN3pV5fW3763yjdwZPN6auMW/f5DnqZx/+3Fy93gEXZ1yHdQKdPZw61H15ah4SaoKevbQ5A4G2s3xji9kKV+SfJ78vC17uJXaUhOCroHyN0n2OfHvPnmUjQbb08tMFUFdYi7byOz+i7Fz5NeQ3DJTXtDmCed9sdRu8ggqR5oL8rNAUDkQtAqCyoGgVRAUpEFQkAZBQRoEBWkQFKRBUJAGQUEaBAVpWhV0ZH9HvfXz4vjxxBcWzr45qB2c/ePkEvVhXsGh+1X3KA+SrMdF2nKjvbBXrXS6wrKtatvZ+OeTnZ0s2lzVaK8pR1H32J1uGPasji3PaG/GUX2gzdnrKdPn8qqqI2waQnNbK9GmoH4Ix+/nnX776UT3x9XIB3MwlcFdqzc2NMhV5c9PX7/j60fl5RovEE5h8tSynX1zNNnZhjamE99+8qgpR1H32X9lzcOeHumK1HpSO2q8HvXs9ZTpc9PMuMiLXPsL0qag/lOw4/3PncENG+lz6cDtZeMffW2GYhK27akP3HcazMHx9d/tXDZlfKaihvF22HEK+N1QzG9ChufXHh1f/72t1Gca7dkCjweX/+3Tg7ef/evO5UdZ0ZP3Qtu+HeNl2dnHA1unKRrKnD22E6tpI7Rmc9o/JvmXzufxBw/tV42KHHYob38y2Np7+81RVgzb9rMY9tRI3Sl/5NsLjbmM//71wGSu7IZy+aBCT0JlRb9cH9xF9kOayO4TXcNFkXpVroJ8/Cbf768f+bH6IRzlFyTUW/9A10Sbgo5dzNhvrxwdXnli484Pd7N8z0eambnQJox2w8H48j9XMmX5pGT+9juuQrcbiuWbXZt6eOlJNt71E6ydD03S2GY5evNTs7f195WqR3t523k4fKWzPzqydZqiocxo++j404PDojXbAducqdh/F3506cnZP+1mZQ5b/Y3s/8JsXKaXw54aqT2Vd86354uM3zN98P2o7IacxaBcT/JrW/bL9cEONAypnt0n+obzIvWqQgW+Pyafvbp+rHYIxbBCvZMf6HpoU1D/vPjBkbtnGAFGe8WeG4GxyCe479ja50iTPNrNM2VZGLY5X4zfnwnF/hhKu8/g8WU3aYZ7vUl6vJe3ONrODu03JLdD1fZJNW97e6KzZvcPf/AfgS8T7vp5531fxrt5xeFJpjK8K38yCeOtv82nkbJkMezpkZqEcOTbqxYJf8rdvFxlUKN8bGW/fB/89XBDqmUvxhkadin1qnwF+fh3i6vrLmD1grh6Jz/QNdGmoNanQzPduHjegR1VuWfPm/uk/zrDFX/ntsllprwGN/hiWvSvS6HYc7+xQoy2/uLSgbtC/unucPftZ/a50uU0RR7bK78XqjZ5bNtlO5XOmpvcX/54x30SoYy72nlV/schT3bGmYbChxZy/NF24c+PQzxymf6nYthTI7UJ4ci3VykSMp+Vu3m5SgdHu9XiYQqzffAPI3ZI9eyVcZZF6lX5Corxu6vrx+qHkF8QX+/kB7omWhTU+eTuRL6/9pZb7FUT3LWxz3z+4a4cXng1+uRReIO5fpTPV+FC+o1/R7JftzClQ93jbWNlqCxoa+op2y8709BZk9M77Mps1/taqcrfnl2Lrhdlf9yk4i2ppWczRmpPhSPfXrUx/6eyG3LWe5IXL/rl+xCa90OayG6/hxoa9kXqVfkKivEXV9eNJO9GcUEmP9A10aKg/vOw//KA6f3zvzqwrzLFnmXsv6jz/FJ4EwoPdyFTXsMb+0/KjG4cZW9+Gn5Ks7xY2ISi5trYK+TrPv7xZ3llZ7+9dFCv2t69is5MdHZ8+eBs5AqEMsfvm+ex3bKv9sfBvFfYLxb5SXJ86ZH94lyZw1bvH9Xqo6wMe3Kk+XOLOfLtlY1Vxpbv5jlDB31P8sRKv2wfbGeKIVWyh8Sx/zJKKFKvyldQjN/5V47V1VTt48QHuiZaFNR/HvarYOOdweUnbkYp92yGne2Q4A/G7uEuq6TZO415nTBz29eDwXt2J78UPktRnW3L/ujvukpDs6GyrZ95bd0fV8C2VW271lnzzvqz9w/Gvk7759C+xJadP3s4uPw798JuKzaFRn/9k/rwbN3mFfmGnx6bhj01UncqHLn28qryPuxWdydOhp6E4kW/fB98Z9yQ6tl9omu4LFKvyg+iHP9uPtZ8CLVuTHygayKB3ySt9aWyofqHs9a1+0cHY+27oM93iqmsJda+5i5MB2Ptu6AQOQgK0iAoSCMuaBk10xA80xA+BH1DXNC5gT8N4UPQN1oV1MfL+GiYWTE6IRSoFnDjVjMe79VCnOy6tguuyZrDh9ocB3RHq8EiPl7GR8PMitHJQ4FqATejvTA9loE/dpU4jxBqCh+CftLuLd7Gy/homFkxOnkoUC3gxqr3OA8PyWN59ooIocbwIegnbQrq42Uq0TkNMTohPKYecGODztwEWgb+OClDhFBz+BD0kjZ/F+/jZcKvaWfE6ITwmHrAjbm/f50HLJexPEWEUFP4UHvDgE5pU9AQROOjc2bE6OThMbWAG/+/bMmqgT8ukiZECDWFD0FPafcWb+NlQnTOjBidEB4zEXCTf2+rDPyxmzxCqCl8CEd7SsfroDPCY57fuHgZ6CUdC9q4Cv/248vzXnpSCh+C/wfwAMMQ4tLOeQAAAABJRU5ErkJggg==" /><!-- --></p>
+<div id="rain-outputs" class="section level3">
+<h3>Sharing outputs</h3>
+<p>The raincloud plot can supplement the probability density plots by
+providing an intuitive and direct visual comparison of the severity of
+the situation at its expected peak for each policy alternative on a
+single plot.</p>
+<p>We also recommend the following standard description for presenting
+the raincloud plots to decision-makers. We provide the standard
+description in paragraph and bullet point form for ease of use.</p>
+<div id="standard-description" class="section level4 unnumbered">
+<h4 class="unnumbered">Standard description</h4>
+<div class="rmdnote">
+<p>This graph shows the distribution of the <u><em>highest</em></u><a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a> forecasted
+<u><em>outcome</em></u><a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a> (i.e., the <u><em>peak</em></u><a href="#fn3" class="footnote-ref" id="fnref3"><sup>3</sup></a>) for each
+scenario alongside a corresponding box plot which indicates the mean and
+50th percentile range. All interventions are displayed on a single graph
+to allow for visual comparison.</p>
+<p>The red dashed line indicates the policy target. The more
+distribution area located to the <u><em>right</em></u><a href="#fn4" class="footnote-ref" id="fnref4"><sup>4</sup></a> of the policy target
+line, the greater the probability that the <u><em>outcome</em></u><a href="#fn5" class="footnote-ref" id="fnref5"><sup>5</sup></a> at its
+forecasted <u><em>peak</em></u><a href="#fn6" class="footnote-ref" id="fnref6"><sup>6</sup></a> will <u><em>surpass</em></u><a href="#fn7" class="footnote-ref" id="fnref7"><sup>7</sup></a> the policy target.</p>
+</div>
+</div>
+<div id="standard-description-bullet-points" class="section level4 unnumbered">
+<h4 class="unnumbered">Standard description bullet points</h4>
+<div class="rmdnote">
+<p>This graph shows:</p>
+<ul>
+<li><p>The distribution of the <u><em>highest</em></u><a href="#fn8" class="footnote-ref" id="fnref8"><sup>8</sup></a> forecasted
+<u><em>outcome</em></u><a href="#fn9" class="footnote-ref" id="fnref9"><sup>9</sup></a> (i.e., the <u><em>peak</em></u><a href="#fn10" class="footnote-ref" id="fnref10"><sup>10</sup></a>) for
+each scenario on a single graph to allow for visual comparison.</p></li>
+<li><p>A corresponding box plot for each scenario which indicates the
+mean and 50th percentile range.</p></li>
+<li><p>The red dashed line indicates the policy target.</p></li>
+<li><p>The more distribution area located to the <u><em>right</em></u><a href="#fn11" class="footnote-ref" id="fnref11"><sup>11</sup></a> of the
+policy target line, the greater the probability that the
+<u><em>outcome</em></u><a href="#fn12" class="footnote-ref" id="fnref12"><sup>12</sup></a> at its forecasted <u><em>peak</em></u><a href="#fn13" class="footnote-ref" id="fnref13"><sup>13</sup></a> will
+<u><em>surpass</em></u><a href="#fn14" class="footnote-ref" id="fnref14"><sup>14</sup></a> the policy target.</p></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="footnotes footnotes-end-of-document">
+<hr />
+<ol>
+<li id="fn1"><p>if threshold is a minimum replace with <em>lowest</em><a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+<li id="fn2"><p>insert outcome description (ex. hospital demand)<a href="#fnref2" class="footnote-back">↩︎</a></p></li>
+<li id="fn3"><p>if threshold is a minimum replace with <em>low
+point</em><a href="#fnref3" class="footnote-back">↩︎</a></p></li>
+<li id="fn4"><p>if threshold is a minimum replace with <em>left</em><a href="#fnref4" class="footnote-back">↩︎</a></p></li>
+<li id="fn5"><p>insert outcome description (ex. hospital demand)<a href="#fnref5" class="footnote-back">↩︎</a></p></li>
+<li id="fn6"><p>if threshold is a minimum replace with <em>low
+point</em><a href="#fnref6" class="footnote-back">↩︎</a></p></li>
+<li id="fn7"><p>if threshold is a minimum replace with <em>fall
+below</em><a href="#fnref7" class="footnote-back">↩︎</a></p></li>
+<li id="fn8"><p>if threshold is a minimum replace with <em>lowest</em><a href="#fnref8" class="footnote-back">↩︎</a></p></li>
+<li id="fn9"><p>insert outcome description (ex. hospital demand)<a href="#fnref9" class="footnote-back">↩︎</a></p></li>
+<li id="fn10"><p>if threshold is a minimum replace with <em>low
+point</em><a href="#fnref10" class="footnote-back">↩︎</a></p></li>
+<li id="fn11"><p>if threshold is a minimum replace with <em>left</em><a href="#fnref11" class="footnote-back">↩︎</a></p></li>
+<li id="fn12"><p>insert outcome description (ex. hospital demand)<a href="#fnref12" class="footnote-back">↩︎</a></p></li>
+<li id="fn13"><p>if threshold is a minimum replace with <em>low
+point</em><a href="#fnref13" class="footnote-back">↩︎</a></p></li>
+<li id="fn14"><p>if threshold is a minimum replace with <em>fall
+below</em><a href="#fnref14" class="footnote-back">↩︎</a></p></li>
+</ol>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
