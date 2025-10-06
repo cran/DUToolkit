@@ -1,6 +1,6 @@
 Package: DUToolkit
 Title: Visualizing and Quantifying Decision Uncertainty
-Version: 1.0.1
+Version: 1.0.2
 Authors@R: c(
     person(given = "Megan", family = "Wiggins", email = "mwiggins@ihe.ca", 
       role = c("aut", "cre"), comment = c(ORCID = "0009-0007-0290-4950")),
@@ -24,7 +24,8 @@ Description: A suite of tools to help modelers and decision-makers effectively
  interpret and communicate decision risk when evaluating multiple policy options.
  It uses model outputs from uncertainty analysis for baseline scenarios and policy
  alternatives to generate visual representations of uncertainty and quantitative
- measures for assessing associated risks. For more details see <https://dut.ihe.ca/>.
+ measures for assessing associated risks. For more details see 
+ Wiggins and colleagues (2025) <doi:10.1371/journal.pone.0332522> and <https://dut.ihe.ca/>.
 License: GPL (>= 2)
 Encoding: UTF-8
 RoxygenNote: 7.3.1
@@ -36,7 +37,7 @@ LazyDataCompression: xz
 Imports: ggdist, ggplot2, ggtext, rlang, scales, stats
 Config/testthat/edition: 3
 NeedsCompilation: no
-Packaged: 2025-09-15 14:47:47 UTC; mwiggins
+Packaged: 2025-10-06 16:19:05 UTC; mwiggins
 Author: Megan Wiggins [aut, cre] (ORCID:
     <https://orcid.org/0009-0007-0290-4950>),
   Marie Betsy Varughese [aut] (ORCID:
@@ -51,4 +52,4 @@ Author: Megan Wiggins [aut, cre] (ORCID:
   Canadian Network for Modelling Infectious Diseases [fnd]
 Maintainer: Megan Wiggins <mwiggins@ihe.ca>
 Repository: CRAN
-Date/Publication: 2025-09-16 11:00:17 UTC
+Date/Publication: 2025-10-06 16:40:02 UTC
